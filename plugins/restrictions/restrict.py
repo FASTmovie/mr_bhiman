@@ -1,11 +1,18 @@
-from pyrogram import Client, filters
+from pyrogram import (
+    Client,
+    filters
+)
+from pyrogram.types import (
+    ChatPermissions
+)
+from info import COMMAND_HAND_LER
 from plugins.helper_functions.admin_check import admin_check
 from plugins.helper_functions.extract_user import extract_user
 from plugins.helper_functions.string_handling import extract_time
 
 
-@Client.on_message(filters.command("ban"))
-async def ban_user(_, message):
+@Client.on_message(filters.command("mute", COMMAND_HAND_LER))
+async def mute_user(_, message):
     is_admin = await admin_check(message)
     if not is_admin:
         return
@@ -13,8 +20,10 @@ async def ban_user(_, message):
     user_id, user_first_name = extract_user(message)
 
     try:
-        await message.chat.kick_member(
-            user_id=user_id
+        await message.chat.restrict_member(
+            user_id=user_id,
+            permissions=ChatPermissions(
+            )
         )
     except Exception as error:
         await message.reply_text(
@@ -23,22 +32,22 @@ async def ban_user(_, message):
     else:
         if str(user_id).lower().startswith("@"):
             await message.reply_text(
-                "Someone else is dusting off..! "
+                "👍🏻 "
                 f"{user_first_name}"
-                " Is forbidden."
+                "Shut Your Mouth! 🤬"
             )
         else:
             await message.reply_text(
-                "Someone else is dusting off..! "
+                "👍🏻 "
                 f"<a href='tg://user?id={user_id}'>"
-                f"{user_first_name}"
+                "Shut"
                 "</a>"
-                " Is forbidden."
+                " Your Mouth! 🤐"
             )
 
 
-@Client.on_message(filters.command("tban"))
-async def temp_ban_user(_, message):
+@Client.on_message(filters.command("tmute", COMMAND_HAND_LER))
+async def temp_mute_user(_, message):
     is_admin = await admin_check(message)
     if not is_admin:
         return
@@ -53,7 +62,7 @@ async def temp_ban_user(_, message):
         await message.reply_text(
             (
                 "Invalid time type specified. "
-                "Expected m, h, or d, Got it: {}"
+                "Expected m, h, or d, Got: {}"
             ).format(
                 message.command[1][-1]
             )
@@ -61,8 +70,10 @@ async def temp_ban_user(_, message):
         return
 
     try:
-        await message.chat.kick_member(
+        await message.chat.restrict_member(
             user_id=user_id,
+            permissions=ChatPermissions(
+            ),
             until_date=until_date_val
         )
     except Exception as error:
@@ -72,15 +83,16 @@ async def temp_ban_user(_, message):
     else:
         if str(user_id).lower().startswith("@"):
             await message.reply_text(
-                "Someone else is dusting off..! "
+                "Be quiet for a while! 😠"
                 f"{user_first_name}"
-                f" banned for {message.command[1]}!"
+                f" muted for {message.command[1]}!"
             )
         else:
             await message.reply_text(
-                "Someone else is dusting off..! "
+                "Be quiet for a while! 😠"
                 f"<a href='tg://user?id={user_id}'>"
-                "Lavane"
+                "His "
                 "</a>"
-                f" banned for {message.command[1]}!"
+                "Mouth"
+                f" muted for {message.command[1]}!"
             )
